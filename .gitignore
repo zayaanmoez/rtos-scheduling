@@ -1,0 +1,15 @@
+# Object files
+*.o
+
+# Build Directory
+build/
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+*.core

@@ -1,4 +1,3 @@
-
 #
 #	Makefile 
 #
@@ -13,15 +12,27 @@ TARGET = -Vgcc_ntox86_64
 #TARGET = -Vgcc_ntoarmv7le
 #TARGET = -Vgcc_ntoaarch64le
 
-
 CFLAGS += $(DEBUG) $(TARGET) -Wall
 LDFLAGS+= $(DEBUG) $(TARGET)
+
+ODIR=./build
+DEPS = scheduler.h policy.h
+
+_OBJ = scheduler.o priority.o
+OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+
 BINS = scheduler
 all: $(BINS)
 
+$(ODIR)/%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+	
+scheduler: $(OBJ)
+	$(CC) -o $@ $^
+
+.PHONY: clean
+
 clean:
-	rm -f *.o $(BINS);
+	rm -f $(ODIR)/*.o $(BINS) *.core;
 
-
-scheduler.o: scheduler.c scheduler.h
 

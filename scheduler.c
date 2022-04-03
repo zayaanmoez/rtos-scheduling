@@ -1,54 +1,73 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "scheduler.h"
+#include "policy.h"
 
 
-tcb_t task_list[MAX_TASKS+1];
-int t_curr;
-
-void scheduler();
-
+tcb_t **task_list;
 
 int main(void) {
 
-	// Initialize array of task pointers
-	void (*tasks[MAX_TASKS]) (void *p) = {task1, task2, task3, task4, task5, task6};
-
-	int num_tasks = sizeof(tasks)/sizeof(*tasks);
-	for (int i = 0; i < num_tasks; i++) {
-		task_create(tasks[i], NULL, 0);
+	// Allocate memory for task control blocks
+	task_list = malloc(MAX_TASKS * sizeof(tcb_t));
+	for(int i = 0; i < MAX_TASKS; i++) {
+		task_list[i] = (tcb_t *) malloc(sizeof(tcb_t));
 	}
 
-	while(1) {
-		scheduler();
+
+	// Priority Based Scheduling
+	int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
+	int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
+	int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
+
+	for(int i = 0; i < NUM_TASKS; i++) {
+		task_create(burstTime_p[i], arrivalTime_p[i], priorities_p[i]);
 	}
+	priorityScheduler(task_list, NUM_TASKS);
+	detach_tasks();
+
+	// TODO: Round Robin Scheduling
+
+
+	// TODO: Priority Based Round Robin Scheduling
+
+
+	// TODO: Priority Based Scheduling
+
+
+
+	// Free task control blocks
+	for(int i = 0; i < MAX_TASKS; i++) {
+		free(task_list[i]);
+	}
+	free(task_list);
 
 	return EXIT_SUCCESS;
 }
 
 
-
-void scheduler() {
-
-}
-
-
 /*
- * Create/attach task to task list
+ * Create/attach or detach tasks to/from task list
+ * task.attached = 1 when tcb block is in use and 0 otherwise
  */
 
-int task_create(void (*fptr)(void *p), void * args, int priority) {
-	int i;
+int task_create(int burstTime, int arrivalTime, int priority) {
+	int i = 0;
 
 	while(i < MAX_TASKS) {
-		if(task_list[i].attached != 1) {
-			task_list[i].pid = i;
-			task_list[i].fptr = fptr;
-			task_list[i].args = args;
-			task_list[i].state = STATE_READY;
-			task_list[i].delay = -1;
-			task_list[i].priority = priority;
-			task_list[i].attached = 1;
+		if(task_list[i]->attached != 1) {
+			task_list[i]->pid = i;
+			asprintf(&task_list[i]->pname, "P%d", i+1);
+			task_list[i]->state = STATE_INACTIVE;
+			task_list[i]->priority = priority;
+			task_list[i]->attached = 1;
+
+			task_list[i]->params.arrivalTime = arrivalTime;
+			task_list[i]->params.burstTime = burstTime;
+			task_list[i]->params.responseTime = -1;
+			task_list[i]->params.waitingTime = 0;
+			task_list[i]->params.runTime = 0;
 			return 0;
 		}
 		i++;
@@ -58,50 +77,146 @@ int task_create(void (*fptr)(void *p), void * args, int priority) {
 }
 
 
+void detach_tasks() {
+	for(int i = 0; i < MAX_TASKS; i++) {
+		task_list[i]->attached = 0;
+	}
+}
+
+
 /*
  * Functions to manage task state
  */
 
 void start_task(int task_id) {
-	task_list[task_id].state = STATE_READY;
+	task_list[task_id]->state = STATE_RUNNING;
 }
 
-void delay(unsigned int d) {
-	task_list[t_curr].delay = d;
-	task_list[t_curr].state = STATE_WAITING;
+void suspend_task(int task_id) {
+	task_list[task_id]->state = STATE_WAITING;
 }
 
-void suspend_task() {
-	task_list[t_curr].state = STATE_INACTIVE;
+void ready_task(int task_id) {
+	task_list[task_id]->state = STATE_READY;
+}
+
+void terminate_task(int task_id) {
+	task_list[task_id]->state = STATE_TERMINATED;
+
+}
+
+
+/*
+ * Sort task array by priority
+ */
+
+int priorityComp(const void *elem1, const void *elem2) {
+	int p1 = (*((tcb_t**)elem1))->priority;
+	int p2 = (*((tcb_t**)elem2))->priority;
+	if(p1 > p2) return 1;
+	if(p1 < p2) return -1;
+	return 0;
+}
+
+void prioritySort(tcb_t **task_array, int numReady) {
+	qsort(task_array, numReady, sizeof(*task_array), priorityComp);
+}
+
+
+/*
+ * Insert to and remove first task from ready task queue
+ */
+
+void insertQueue(tcb_t **ready_queue, tcb_t *task, int *numReady) {
+	int i = 0;
+	while(ready_queue[i] != NULL) i++;
+	ready_queue[i] = task;
+	++(*numReady);
+}
+
+tcb_t *popQueue(tcb_t **ready_queue, int *numReady) {
+	if (*numReady > 0) {
+		tcb_t *nextTask = ready_queue[0];
+		for(int i = 0; i < *numReady-1; i++) {
+			ready_queue[i] = ready_queue[i+1];
+		}
+		ready_queue[*numReady-1] = NULL;
+		--(*numReady);
+		return nextTask;
+	}
+	return NULL;
 }
 
 /*
- * Test processes
+ * Interval list functions to track schedule
  */
 
-void task1(void *p) {
-	printf("task1/n");
+void insertInterval(Interval **schedule, int pid, int time) {
+	Interval *i = (Interval*)malloc(sizeof(Interval));
+	i->pid = pid;
+	i->time = time;
+	i->nextInterval = NULL;
+	if((*schedule) == NULL) {
+		(*schedule) = i;
+		return;
+	}
+	while((*schedule)->nextInterval != NULL) {
+		schedule = &((*schedule)->nextInterval);
+	}
+	(*schedule)->nextInterval = i;
 }
 
-void task2(void *p) {
-	printf("task2/n");
+void freeSchedule(Interval **schedule) {
+	Interval* sched = *schedule;
+	Interval* temp = *schedule;
+	*schedule = NULL;
+
+	while(sched != NULL) {
+		sched = sched->nextInterval;
+		free(temp);
+		temp = sched;
+	}
 }
 
-void task3(void *p) {
-	printf("task3/n");
+
+/*
+ * Print Gantt Chart for the current task_list
+ */
+
+void printGanttChart(char *sched_name, Interval *schedule) {
+	printf("\nGantt Chart - %s\n", sched_name);
+
+	Interval *process_seq = schedule->nextInterval;
+	while(process_seq != NULL) {
+		printf("|  P%d  ", process_seq->pid+1);
+		process_seq = process_seq->nextInterval;
+	}
+	printf("|\n");
+
+	Interval *interval_seq = schedule;
+	while(interval_seq != NULL) {
+		printf("%-7d", interval_seq->time);
+		interval_seq = interval_seq->nextInterval;
+	}
+	printf("\n");
 }
 
-void task4(void *p) {
-	printf("task4/n");
-}
 
-void task5(void *p) {
-	printf("task5/n");
-}
+/*
+ * Print scheduling info
+ */
 
-void task6(void *p) {
-	printf("task6/n");
-}
+void printSchedulingInfo() {
+	printf("\nProcess\tArrival_time\tBurst_Time\tWaiting_Time\tResponse_Time\tTurn_Around_Time\n");
 
+	int i = 0;
+
+	while(i < MAX_TASKS && task_list[i]->attached == 1) {
+		sched_params params = task_list[i]->params;
+		printf("%s\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t\n", task_list[i]->pname, params.arrivalTime,
+				params.burstTime, params.waitingTime, params.responseTime, params.runTime+params.waitingTime);
+		++i;
+	}
+}
 
 
