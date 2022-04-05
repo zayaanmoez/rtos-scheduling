@@ -1,5 +1,6 @@
 #ifndef SCHEDULER_H
 #define SCHEDULER_H
+
 // Task state to track in task control block
 
 #define STATE_INACTIVE 0
@@ -11,6 +12,14 @@
 #define MAX_TASKS 10
 #define NUM_TASKS 5
 #define TIME_QUANTUM 3
+
+// Scheduling algorithms
+#define ROUND_ROBIN 1
+#define PRIORITY 2
+#define MODIFIED_RR 3
+#define MODULO_BASED_RR 4
+#define PRIORITY_BASED_RR 5
+#define EXIT 6
 
 // Task control block object to track task state
 typedef struct sched_params {
@@ -56,5 +65,7 @@ void freeSchedule(Interval **schedule);
 void printGanttChart(char *sched_name, Interval *schedule);
 
 void printSchedulingInfo();
+
+int getArgs(int *sched);
 
 #endif

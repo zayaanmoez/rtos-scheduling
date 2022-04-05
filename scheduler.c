@@ -7,7 +7,9 @@
 
 tcb_t **task_list;
 
-int main(void) {
+int main(int argc, char **argv) {
+
+	int sched;
 
 	// Allocate memory for task control blocks
 	task_list = malloc(MAX_TASKS * sizeof(tcb_t));
@@ -15,40 +17,73 @@ int main(void) {
 		task_list[i] = (tcb_t *) malloc(sizeof(tcb_t));
 	}
 
+	while(sched != EXIT) {
 
-	// Priority Based Scheduling
-	int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
-	int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
-	int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
+		// Get input
+		if(getArgs(&sched) != 1) return EXIT_FAILURE;
 
-	for(int i = 0; i < NUM_TASKS; i++) {
-		task_create(burstTime_p[i], arrivalTime_p[i], priorities_p[i]);
+		switch(sched) {
+			case ROUND_ROBIN:
+			{
+				// Round Robin Scheduling
+				int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
+				int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
+
+				for(int i = 0; i < NUM_TASKS; i++) {
+					task_create(burstTime_rr[i], arrivalTime_rr[i], NULL);
+				}
+				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				break;
+			}
+			case PRIORITY:
+			{
+				// Priority Based Scheduling
+				int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
+				int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
+				int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
+
+				for(int i = 0; i < NUM_TASKS; i++) {
+					task_create(burstTime_p[i], arrivalTime_p[i], priorities_p[i]);
+				}
+				priorityScheduler(task_list, NUM_TASKS);
+				break;
+			}
+			case MODIFIED_RR:
+			{
+				// TODO: Modified Round Robin Scheduling
+
+				break;
+			}
+			case MODULO_BASED_RR:
+			{
+				// TODO: Modulo Based Round Robin Scheduling
+
+				break;
+			}
+			case PRIORITY_BASED_RR:
+			{
+				// TODO: Priority Based Round Robin Scheduling
+
+				break;
+			}
+			case EXIT:
+				printf("Exiting.");
+				break;
+			default:
+				printf("invalid argument.\n");
+				break;
+		}
+
+		// detach tcb blocks
+		detach_tasks();
 	}
-	priorityScheduler(task_list, NUM_TASKS);
-	detach_tasks();
-
-	// TODO: Round Robin Scheduling
-
-	int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
-	int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
-
-	for(int i = 0; i < NUM_TASKS; i++) {
-		task_create(burstTime_rr[i], arrivalTime_rr[i], NULL);
-	}
-	rrScheduler(task_list, NUM_TASKS, 3);
-	detach_tasks();
-
-	// TODO: Priority Based Round Robin Scheduling
-
-
-	// TODO: Priority Based Scheduling
-
 
 
 	// Free task control blocks
 	for(int i = 0; i < MAX_TASKS; i++) {
 		free(task_list[i]);
 	}
+
 	free(task_list);
 
 	return EXIT_SUCCESS;
@@ -215,16 +250,40 @@ void printGanttChart(char *sched_name, Interval *schedule) {
  */
 
 void printSchedulingInfo() {
-	printf("\nProcess\tArrival_time\tBurst_Time\tWaiting_Time\tResponse_Time\tTurn_Around_Time\n");
+	printf("\nProcess\tPrio\tArrival_time\tBurst_Time\tWaiting_Time\tResponse_Time\tTurn_Around_Time\n");
 
 	int i = 0;
 
 	while(i < MAX_TASKS && task_list[i]->attached == 1) {
 		sched_params params = task_list[i]->params;
-		printf("%s\t\t%d\t\t%d\t\t%d\t\t%d\t\t%d\t\t\n", task_list[i]->pname, params.arrivalTime,
-				params.burstTime, params.waitingTime, params.responseTime, params.runTime+params.waitingTime);
+		printf("%7s\t%4d\t%12d\t%10d\t%12d\t%13d\t%16d\t\n", task_list[i]->pname, task_list[i]->priority,
+				params.arrivalTime, params.burstTime, params.waitingTime, params.responseTime,
+				params.runTime+params.waitingTime);
 		++i;
 	}
 }
 
+
+/*
+ * Print list of arguments
+ */
+
+int getArgs(int *sched) {
+	printf("\nScheduling Arguments: \n"
+			"%d. Round Robin\n"
+			"%d. Priority\n"
+			"%d. Modified Round Robin\n"
+			"%d. Modulo Based Round Robin\n"
+			"%d. Priority Based Round Robin\n"
+			"%d. Exit\n\nEnter sched param (1-6): \n",
+			ROUND_ROBIN, PRIORITY, MODIFIED_RR, MODULO_BASED_RR, PRIORITY_BASED_RR,EXIT);
+	if (scanf("%d", sched) != 1)
+	{
+	  printf("invalid argument.\n");
+	  return -1;
+	}
+	printf("\n");
+
+	return 1;
+}
 
