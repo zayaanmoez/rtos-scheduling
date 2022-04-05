@@ -18,7 +18,7 @@ LDFLAGS+= $(DEBUG) $(TARGET)
 ODIR=./build
 DEPS = scheduler.h policy.h
 
-_OBJ = scheduler.o priority.o
+_OBJ = scheduler.o priority.o round_robin.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 BINS = scheduler

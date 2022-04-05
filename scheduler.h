@@ -47,6 +47,7 @@ void ready_task(int task_id);
 void terminate_task(int task_id);
 
 void prioritySort(tcb_t **task_array, int numReady);
+void rrSort(tcb_t **task_array, int numReady);
 
 void insertQueue(tcb_t **ready_queue, tcb_t *task, int *numReady);
 tcb_t *popQueue(tcb_t **ready_queue, int *numReady);
