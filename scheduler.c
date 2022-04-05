@@ -35,7 +35,7 @@ int main(void) {
 	for(int i = 0; i < NUM_TASKS; i++) {
 		task_create(burstTime_rr[i], arrivalTime_rr[i], NULL);
 	}
-	rrScheduler(task_list, NUM_TASKS);
+	rrScheduler(task_list, NUM_TASKS, 3);
 	detach_tasks();
 
 	// TODO: Priority Based Round Robin Scheduling
@@ -129,20 +129,6 @@ int priorityComp(const void *elem1, const void *elem2) {
 void prioritySort(tcb_t **task_array, int numReady) {
 	qsort(task_array, numReady, sizeof(*task_array), priorityComp);
 }
-
-
-int rrComp(const void *elem1, const void *elem2) {
-	int p1 = (*((tcb_t**)elem1))->params.arrivalTime;
-	int p2 = (*((tcb_t**)elem2))->params.arrivalTime;
-	if(p1 > p2) return 1;
-	if(p1 < p2) return -1;
-	return 0;
-}
-
-void rrSort(tcb_t **task_array, int numReady) {
-	qsort(task_array, numReady, sizeof(*task_array), rrComp);
-}
-
 
 
 /*

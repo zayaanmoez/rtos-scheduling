@@ -5,9 +5,8 @@
 
 #define SCHED_NAME "Round Robin Scheduler"
 
-
 void schedule_task_rr(tcb_t **ready_queue, tcb_t **running_task, Interval **schedule,
-		int *numReady, int currentTime) {
+		int *numReady, int currentTime, int quantum_number) {
 
 	if(*running_task != NULL) {
 		(*running_task)->params.runTime += 1;
@@ -15,7 +14,7 @@ void schedule_task_rr(tcb_t **ready_queue, tcb_t **running_task, Interval **sche
 			terminate_task((*running_task)->pid);
 			insertInterval(schedule, (*running_task)->pid, currentTime);
 			*running_task = NULL;
-		} else if(*numReady > 0 && (*running_task)->params.burstTime > 3) {
+		} else if(*numReady > 0 && (*running_task)->params.runTime%quantum_number == 0) {
 			suspend_task((*running_task)->pid);
 			insertInterval(schedule, (*running_task)->pid, currentTime);
 			*running_task = NULL;
@@ -35,12 +34,12 @@ void schedule_task_rr(tcb_t **ready_queue, tcb_t **running_task, Interval **sche
 	if(*running_task == NULL) {
 		printf("No task running - current time = %d\n", currentTime);
 	} else {
-		printf("running process %s - current time = %d\n", (*running_task)->pname, currentTime);
+		printf("running process %s - current time = %d \n", (*running_task)->pname, currentTime);
 	}
 
 }
-
-void rrScheduler(tcb_t **task_list, int num_tasks) {
+//Fifo ready queue
+void rrScheduler(tcb_t **task_list, int num_tasks, int quantum_number) {
 	int totalWaitingtime = 0, totalBursttime = 0,
 		totalResponsetime = 0, currentTime = 0,
 		numProcesses = 0, numReady = 0;
@@ -48,7 +47,6 @@ void rrScheduler(tcb_t **task_list, int num_tasks) {
 	tcb_t **ready_queue = calloc(MAX_TASKS, sizeof(tcb_t *));
 	tcb_t *running_task = NULL;
 	Interval *schedule = NULL;
-	int time_quantum = 3;
 
 	printf("\n<---------------------------------->\n");
 	printf("\t%s\n\n", SCHED_NAME);
@@ -58,19 +56,17 @@ void rrScheduler(tcb_t **task_list, int num_tasks) {
 			if(task_list[i]->state == STATE_WAITING) {
 				ready_task(i);
 				insertQueue(ready_queue, task_list[i], &numReady);
-				rrSort(ready_queue, numReady);
 				task_list[i]->params.waitingTime += 1;
 			} else if (task_list[i]->state == STATE_INACTIVE &&
 					task_list[i]->params.arrivalTime == currentTime) {
 				ready_task(i);
 				insertQueue(ready_queue, task_list[i], &numReady);
-				rrSort(ready_queue, numReady);
 				++numProcesses;
 			} else if (task_list[i]->state == STATE_READY) {  // TODO: Double check average waiting time
 				task_list[i]->params.waitingTime += 1;
 			}
 		}
-		schedule_task_rr(ready_queue, &running_task, &schedule, &numReady, currentTime);
+		schedule_task_rr(ready_queue, &running_task, &schedule, &numReady, currentTime, quantum_number);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 
