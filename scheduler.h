@@ -19,7 +19,11 @@
 #define MODIFIED_RR 3
 #define MODULO_BASED_RR 4
 #define PRIORITY_BASED_RR 5
-#define EXIT 6
+#define PBRR_PRIO 6
+#define PBRR_RR 7
+#define PBRR_MRR 8
+#define PBRR_MBRR 9
+#define EXIT 0
 
 // Task control block object to track task state
 typedef struct sched_params {
@@ -38,7 +42,7 @@ typedef struct task_control_block {
 	int priority;
 	sched_params params;
 	int attached;
-} tcb_t;
+} tcb_t;s
 
 // Interval node to track scheduling sequence in linked list
 typedef struct interval_node {

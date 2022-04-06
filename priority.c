@@ -7,7 +7,7 @@
 #define SCHED_NAME "Priority Based Scheduler"
 
 
-void schedule_task(tcb_t **ready_queue, tcb_t **running_task, Interval **schedule,
+void schedule_task_prio(tcb_t **ready_queue, tcb_t **running_task, Interval **schedule,
 		int *numReady, int currentTime) {
 	if(*running_task != NULL) {
 		(*running_task)->params.runTime += 1;
@@ -69,8 +69,8 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 				task_list[i]->params.waitingTime += 1;
 			}
 		}
-		schedule_task(ready_queue, &running_task, &schedule, &numReady, currentTime);
-		delay(500);
+		schedule_task_prio(ready_queue, &running_task, &schedule, &numReady, currentTime);
+		//delay(500);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 

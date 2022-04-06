@@ -22,53 +22,87 @@ int main(int argc, char **argv) {
 		// Get input
 		if(getArgs(&sched) != 1) return EXIT_FAILURE;
 
+		// Process params for priority based
+		int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
+		int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
+		int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
+
+		// Process params for round robin based
+		int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
+		int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
+
 		switch(sched) {
 			case ROUND_ROBIN:
-			{
 				// Round Robin Scheduling
-				int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
-				int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
-
 				init_tasks(burstTime_rr, arrivalTime_rr, NULL, NUM_TASKS);
 				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
 				break;
-			}
-			case PRIORITY:
-			{
-				// Priority Based Scheduling
-				int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
-				int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
-				int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
 
-				for(int i = 0; i < NUM_TASKS; i++) {
-					init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
-				}
+			case PRIORITY:
+				// Priority Based Scheduling
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
 				priorityScheduler(task_list, NUM_TASKS);
 				break;
-			}
+
 			case MODIFIED_RR:
-			{
 				// TODO: Modified Round Robin Scheduling
-//				int burstTime_p[NUM_TASKS] = {10, 20, 30, 40, 50};
 				break;
-			}
+
 			case MODULO_BASED_RR:
-			{
 				// TODO: Modulo Based Round Robin Scheduling
 
 				break;
-			}
-			case PRIORITY_BASED_RR:
-			{
-				// TODO: Priority Based Round Robin Scheduling
 
+			case PRIORITY_BASED_RR:
+				// Priority Based Round Robin Scheduling
+				init_tasks(burstTime_p, NULL, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
 				break;
-			}
-//			case MBRR_RR:
-//			case MRR_RR:
-//			case PBRR_RR:
-//			case PBRR_MRR:
-//			case PBRR_MBRR:
+
+			case PBRR_PRIO:
+				// Priority Based RR and Priority Based
+				printf("Priority Based Round Robin and Priority Based\n");
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityScheduler(task_list, NUM_TASKS);
+				detach_tasks();
+
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				break;
+
+			case PBRR_RR:
+				// Priority Based RR and Round Robin
+				printf("Priority Based Round Robin and Round Robin\n");
+				init_tasks(burstTime_p, arrivalTime_p, NULL, NUM_TASKS);
+				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				detach_tasks();
+
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				break;
+
+			case PBRR_MRR:
+				// Priority Based RR and Modified Round Robin
+				printf("Priority Based Round Robin and Modified Round Robin\n");
+				init_tasks(burstTime_p, arrivalTime_p, NULL, NUM_TASKS);
+				// TODO: add MRR scheduler
+				detach_tasks();
+
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				break;
+
+			case PBRR_MBRR:
+				// Priority Based RR and Modulo Based RR
+				printf("Priority Based Round Robin and Modulo Based Round Robin\n");
+				init_tasks(burstTime_p, arrivalTime_p, NULL, NUM_TASKS);
+				// TODO: add MBRR scheduler
+				detach_tasks();
+
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				break;
+
 			case EXIT:
 				printf("Exiting.");
 				break;
@@ -280,12 +314,17 @@ void printSchedulingInfo() {
 int getArgs(int *sched) {
 	printf("\nScheduling Arguments: \n"
 			"%d. Round Robin\n"
-			"%d. Priority\n"
+			"%d. Priority Based\n"
 			"%d. Modified Round Robin\n"
 			"%d. Modulo Based Round Robin\n"
 			"%d. Priority Based Round Robin\n"
-			"%d. Exit\n\nEnter sched param (1-6): \n",
-			ROUND_ROBIN, PRIORITY, MODIFIED_RR, MODULO_BASED_RR, PRIORITY_BASED_RR,EXIT);
+			"%d. Priority Based RR and Priority Based\n"
+			"%d. Priority Based RR and Round Robin\n"
+			"%d. Priority Based RR and Modified RR\n"
+			"%d. Priority Based RR and Modulo Based RR\n"
+			"%d. Exit\n\nEnter sched param (0-9): \n",
+			ROUND_ROBIN, PRIORITY, MODIFIED_RR, MODULO_BASED_RR, PRIORITY_BASED_RR,
+			PBRR_PRIO, PBRR_RR, PBRR_MRR, PBRR_MBRR, EXIT);
 	if (scanf("%d", sched) != 1)
 	{
 	  printf("invalid argument.\n");
