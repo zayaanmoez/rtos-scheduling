@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "scheduler.h"
 #include "policy.h"
 
@@ -42,7 +43,7 @@ void schedule_task(tcb_t **ready_queue, tcb_t **running_task, Interval **schedul
 void priorityScheduler(tcb_t **task_list, int num_tasks) {
 	int totalWaitingtime = 0, totalBursttime = 0,
 		totalResponsetime = 0, currentTime = 0,
-		numProcesses = 0, numReady = 0;
+		contextSwitches = 0, numProcesses = 0, numReady = 0;
 
 	tcb_t **ready_queue = calloc(MAX_TASKS, sizeof(tcb_t *));
 	tcb_t *running_task = NULL;
@@ -69,6 +70,7 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 			}
 		}
 		schedule_task(ready_queue, &running_task, &schedule, &numReady, currentTime);
+		delay(500);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 
@@ -76,6 +78,12 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 		totalResponsetime += task_list[i]->params.responseTime;
 		totalWaitingtime += task_list[i]->params.waitingTime;
 		totalBursttime += task_list[i]->params.burstTime;
+	}
+
+	Interval *s = schedule;
+	while(s != NULL) {
+		++contextSwitches;
+		s = s->nextInterval;
 	}
 
 	printSchedulingInfo();
@@ -88,6 +96,7 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 		   ((float)(totalWaitingtime + totalBursttime) / (float)num_tasks));
 	printf("Throughput = %.4f\n",
 			   ((float)num_tasks) / (float)(totalWaitingtime + totalBursttime));
+	printf("# of Context Switches = %d\n", contextSwitches > 0 ? contextSwitches - 2 : 0);
 	printGanttChart(SCHED_NAME, schedule);
 	printf("\n<---------------------------------->\n");
 

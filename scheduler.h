@@ -49,6 +49,7 @@ typedef struct interval_node {
 
 int task_create();
 void detach_tasks();
+void init_tasks(int *burstTimes, int * arrivalTimes, int *priorities, int num_tasks);
 
 void start_task(int task_id);
 void suspend_task(int task_id);

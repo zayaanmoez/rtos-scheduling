@@ -29,9 +29,7 @@ int main(int argc, char **argv) {
 				int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
 				int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
 
-				for(int i = 0; i < NUM_TASKS; i++) {
-					task_create(burstTime_rr[i], arrivalTime_rr[i], NULL);
-				}
+				init_tasks(burstTime_rr, arrivalTime_rr, NULL, NUM_TASKS);
 				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
 				break;
 			}
@@ -43,7 +41,7 @@ int main(int argc, char **argv) {
 				int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
 
 				for(int i = 0; i < NUM_TASKS; i++) {
-					task_create(burstTime_p[i], arrivalTime_p[i], priorities_p[i]);
+					init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
 				}
 				priorityScheduler(task_list, NUM_TASKS);
 				break;
@@ -51,7 +49,7 @@ int main(int argc, char **argv) {
 			case MODIFIED_RR:
 			{
 				// TODO: Modified Round Robin Scheduling
-
+//				int burstTime_p[NUM_TASKS] = {10, 20, 30, 40, 50};
 				break;
 			}
 			case MODULO_BASED_RR:
@@ -66,6 +64,11 @@ int main(int argc, char **argv) {
 
 				break;
 			}
+//			case MBRR_RR:
+//			case MRR_RR:
+//			case PBRR_RR:
+//			case PBRR_MRR:
+//			case PBRR_MBRR:
 			case EXIT:
 				printf("Exiting.");
 				break;
@@ -119,10 +122,16 @@ int task_create(int burstTime, int arrivalTime, int priority) {
 	return -1;
 }
 
-
 void detach_tasks() {
 	for(int i = 0; i < MAX_TASKS; i++) {
 		task_list[i]->attached = 0;
+	}
+}
+
+void init_tasks(int *burstTimes, int * arrivalTimes, int *priorities, int num_tasks) {
+	for(int i = 0; i < num_tasks; i++) {
+		task_create(burstTimes[i], (arrivalTimes != NULL ? arrivalTimes[i] : 0),
+				(priorities != NULL ? priorities[i] : 0));
 	}
 }
 
