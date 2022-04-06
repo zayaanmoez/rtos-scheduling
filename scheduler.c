@@ -6,6 +6,7 @@
 
 
 tcb_t **task_list;
+int p = 0;
 
 int main(int argc, char **argv) {
 
@@ -46,12 +47,11 @@ int main(int argc, char **argv) {
 			}
 			case MODIFIED_RR:
 			{
-				// TODO: Modified Round Robin Scheduling
 				// Modified Round Robin Scheduling
 				int burstTime_mrr[NUM_TASKS] = {14, 45, 36, 25, 77};
 				int arrivalTime_mrr[NUM_TASKS] = {0, 1, 2, 3, 4};
 
-				int qn;
+				int qn = 0;
 				if(NUM_TASKS%2 == 0){
 					for(int i = 0; i < NUM_TASKS; i++){
 						qn += burstTime_mrr[i];
@@ -68,7 +68,23 @@ int main(int argc, char **argv) {
 			}
 			case MODULO_BASED_RR:
 			{
-				// TODO: Modulo Based Round Robin Scheduling
+				//Modulo Based Round Robin Scheduling
+				//int burstTime_morr[NUM_TASKS] = {10, 20, 30, 40, 50};
+				//int arrivalTime_morr[NUM_TASKS] = {0, 0, 0, 0, 0};
+
+				int burstTime_morr[4] = {43, 32, 24, 17};
+				int arrivalTime_morr[4] = {0, 0, 0, 0};
+
+				int qn = 0;
+				for(int i = 0; i < 4; i++){
+					qn += burstTime_morr[i];
+				}
+				qn /= 4;
+
+				p = qn;
+
+				init_tasks(burstTime_morr, arrivalTime_morr, NULL, 4);
+				morrScheduler(task_list, 4, qn);
 
 				break;
 			}
@@ -188,6 +204,23 @@ void prioritySort(tcb_t **task_array, int numReady) {
 	qsort(task_array, numReady, sizeof(*task_array), priorityComp);
 }
 
+
+/*
+* Sort task array by burst (or execution) modulo average of burst
+*/
+
+int moduloComp(const void *elem1, const void *elem2) {
+	int p1 = (*((tcb_t**)elem1))->params.burstTime%p;
+	int p2 = (*((tcb_t**)elem2))->params.burstTime%p;
+	if(p1 > p2) return 1;
+	if(p1 < p2) return -1;
+	return 0;
+}
+
+void moduloSort(tcb_t **task_array, int numReady) {
+
+	qsort(task_array, numReady, sizeof(*task_array), moduloComp);
+}
 
 /*
  * Insert to and remove first task from ready task queue
