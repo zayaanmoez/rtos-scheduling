@@ -40,16 +40,14 @@ int main(int argc, char **argv) {
 				int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
 				int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
 
-				for(int i = 0; i < NUM_TASKS; i++) {
-					init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
-				}
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
 				priorityScheduler(task_list, NUM_TASKS);
 				break;
 			}
 			case MODIFIED_RR:
 			{
 				// TODO: Modified Round Robin Scheduling
-				// Priority Based Scheduling
+				// Modified Round Robin Scheduling
 				int burstTime_mrr[NUM_TASKS] = {14, 45, 36, 25, 77};
 				int arrivalTime_mrr[NUM_TASKS] = {0, 1, 2, 3, 4};
 
@@ -63,9 +61,8 @@ int main(int argc, char **argv) {
 				}else{
 					qn = burstTime_mrr[NUM_TASKS/2];
 				}
-				for(int i = 0; i < NUM_TASKS; i++) {
-					task_create(burstTime_mrr[i], arrivalTime_mrr[i], NULL);
-				}
+
+				init_tasks(burstTime_mrr, arrivalTime_mrr, NULL, NUM_TASKS);
 				mrrScheduler(task_list, NUM_TASKS, qn);
 				break;
 			}
