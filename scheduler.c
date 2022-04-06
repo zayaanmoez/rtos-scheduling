@@ -51,7 +51,24 @@ int main(int argc, char **argv) {
 			case MODIFIED_RR:
 			{
 				// TODO: Modified Round Robin Scheduling
+				// Priority Based Scheduling
+				int burstTime_mrr[NUM_TASKS] = {14, 45, 36, 25, 77};
+				int arrivalTime_mrr[NUM_TASKS] = {0, 1, 2, 3, 4};
 
+				int qn;
+				if(NUM_TASKS%2 == 0){
+					for(int i = 0; i < NUM_TASKS; i++){
+						qn += burstTime_mrr[i];
+
+					}
+					qn /= NUM_TASKS;
+				}else{
+					qn = burstTime_mrr[NUM_TASKS/2];
+				}
+				for(int i = 0; i < NUM_TASKS; i++) {
+					task_create(burstTime_mrr[i], arrivalTime_mrr[i], NULL);
+				}
+				mrrScheduler(task_list, NUM_TASKS, qn);
 				break;
 			}
 			case MODULO_BASED_RR:
