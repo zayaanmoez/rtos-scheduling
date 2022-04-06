@@ -31,6 +31,10 @@ int main(int argc, char **argv) {
 		int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
 		int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
 
+		// Process params for modified round robin
+		int burstTime_mrr[NUM_TASKS] = {14, 45, 36, 25, 77};
+		int arrivalTime_mrr[NUM_TASKS] = {0, 1, 2, 3, 4};
+
 		switch(sched) {
 			case ROUND_ROBIN:
 				// Round Robin Scheduling
@@ -45,7 +49,21 @@ int main(int argc, char **argv) {
 				break;
 
 			case MODIFIED_RR:
-				// TODO: Modified Round Robin Scheduling
+				// Modified Round Robin Scheduling
+
+				int qn;
+				if(NUM_TASKS%2 == 0){
+					for(int i = 0; i < NUM_TASKS; i++){
+						qn += burstTime_mrr[i];
+
+					}
+					qn /= NUM_TASKS;
+				}else{
+					qn = burstTime_mrr[NUM_TASKS/2];
+				}
+
+				init_tasks(burstTime_mrr, arrivalTime_mrr, NULL, NUM_TASKS);
+				mrrScheduler(task_list, NUM_TASKS, qn);
 				break;
 
 			case MODULO_BASED_RR:
