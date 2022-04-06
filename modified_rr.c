@@ -3,7 +3,7 @@
 #include "scheduler.h"
 #include "policy.h"
 
-#define SCHED_NAME "Priority Based Scheduler"
+#define SCHED_NAME "Modified Round Robin Scheduler"
 
 
 void schedule_task_mrr(tcb_t **ready_queue, tcb_t **running_task, Interval **schedule,
