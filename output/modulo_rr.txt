@@ -1,0 +1,173 @@
+
+<---------------------------------->
+        Modulo Round Robin Scheduler
+
+running process P5 - current time = 0
+running process P5 - current time = 1
+running process P5 - current time = 2
+running process P5 - current time = 3
+running process P5 - current time = 4
+running process P5 - current time = 5
+running process P5 - current time = 6
+running process P5 - current time = 7
+running process P5 - current time = 8
+running process P5 - current time = 9
+running process P5 - current time = 10
+running process P5 - current time = 11
+running process P5 - current time = 12
+running process P5 - current time = 13
+running process P5 - current time = 14
+running process P5 - current time = 15
+running process P5 - current time = 16
+running process P5 - current time = 17
+running process P5 - current time = 18
+running process P5 - current time = 19
+running process P5 - current time = 20
+running process P5 - current time = 21
+running process P5 - current time = 22
+running process P5 - current time = 23
+running process P5 - current time = 24
+running process P3 - current time = 25
+running process P3 - current time = 26
+running process P3 - current time = 27
+running process P3 - current time = 28
+running process P3 - current time = 29
+running process P3 - current time = 30
+running process P3 - current time = 31
+running process P3 - current time = 32
+running process P3 - current time = 33
+running process P3 - current time = 34
+running process P3 - current time = 35
+running process P3 - current time = 36
+running process P3 - current time = 37
+running process P3 - current time = 38
+running process P3 - current time = 39
+running process P3 - current time = 40
+running process P3 - current time = 41
+running process P3 - current time = 42
+running process P3 - current time = 43
+running process P3 - current time = 44
+running process P3 - current time = 45
+running process P3 - current time = 46
+running process P3 - current time = 47
+running process P3 - current time = 48
+running process P3 - current time = 49
+running process P1 - current time = 50
+running process P1 - current time = 51
+running process P1 - current time = 52
+running process P1 - current time = 53
+running process P1 - current time = 54
+running process P1 - current time = 55
+running process P1 - current time = 56
+running process P1 - current time = 57
+running process P1 - current time = 58
+running process P1 - current time = 59
+running process P4 - current time = 60
+running process P4 - current time = 61
+running process P4 - current time = 62
+running process P4 - current time = 63
+running process P4 - current time = 64
+running process P4 - current time = 65
+running process P4 - current time = 66
+running process P4 - current time = 67
+running process P4 - current time = 68
+running process P4 - current time = 69
+running process P4 - current time = 70
+running process P4 - current time = 71
+running process P4 - current time = 72
+running process P4 - current time = 73
+running process P4 - current time = 74
+running process P4 - current time = 75
+running process P4 - current time = 76
+running process P4 - current time = 77
+running process P4 - current time = 78
+running process P4 - current time = 79
+running process P4 - current time = 80
+running process P4 - current time = 81
+running process P4 - current time = 82
+running process P4 - current time = 83
+running process P4 - current time = 84
+running process P2 - current time = 85
+running process P2 - current time = 86
+running process P2 - current time = 87
+running process P2 - current time = 88
+running process P2 - current time = 89
+running process P2 - current time = 90
+running process P2 - current time = 91
+running process P2 - current time = 92
+running process P2 - current time = 93
+running process P2 - current time = 94
+running process P2 - current time = 95
+running process P2 - current time = 96
+running process P2 - current time = 97
+running process P2 - current time = 98
+running process P2 - current time = 99
+running process P2 - current time = 100
+running process P2 - current time = 101
+running process P2 - current time = 102
+running process P2 - current time = 103
+running process P2 - current time = 104
+running process P5 - current time = 105
+running process P5 - current time = 106
+running process P5 - current time = 107
+running process P5 - current time = 108
+running process P5 - current time = 109
+running process P5 - current time = 110
+running process P5 - current time = 111
+running process P5 - current time = 112
+running process P5 - current time = 113
+running process P5 - current time = 114
+running process P5 - current time = 115
+running process P5 - current time = 116
+running process P5 - current time = 117
+running process P5 - current time = 118
+running process P5 - current time = 119
+running process P5 - current time = 120
+running process P5 - current time = 121
+running process P5 - current time = 122
+running process P5 - current time = 123
+running process P5 - current time = 124
+running process P5 - current time = 125
+running process P5 - current time = 126
+running process P5 - current time = 127
+running process P5 - current time = 128
+running process P5 - current time = 129
+running process P3 - current time = 130
+running process P3 - current time = 131
+running process P3 - current time = 132
+running process P3 - current time = 133
+running process P3 - current time = 134
+running process P4 - current time = 135
+running process P4 - current time = 136
+running process P4 - current time = 137
+running process P4 - current time = 138
+running process P4 - current time = 139
+running process P4 - current time = 140
+running process P4 - current time = 141
+running process P4 - current time = 142
+running process P4 - current time = 143
+running process P4 - current time = 144
+running process P4 - current time = 145
+running process P4 - current time = 146
+running process P4 - current time = 147
+running process P4 - current time = 148
+running process P4 - current time = 149
+No task running - current time = 150
+
+Process Prio    Arrival_time    Burst_Time      Waiting_Time    Response_Time   Turn_Around_Time
+     P1    0               0            10                50               50                 60
+     P2    0               0            20                85               85                105
+     P3    0               0            30               105               25                135
+     P4    0               0            40               110               60                150
+     P5    0               0            50                80                0                130
+Average waiting time = 86.0000
+Average response time = 44.0000
+Average turn around time = 116.0000
+Throughput = 0.0086
+# of Context Switches = 7
+
+Gantt Chart - Modulo Round Robin Scheduler
+|  P5  |  P3  |  P1  |  P4  |  P2  |  P5  |  P3  |  P4  |
+0      25     50     60     85     105    130    135    150
+
+<---------------------------------->

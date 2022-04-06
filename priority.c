@@ -65,7 +65,7 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 				insertQueue(ready_queue, task_list[i], &numReady);
 				prioritySort(ready_queue, numReady);
 				++numProcesses;
-			} else if (task_list[i]->state == STATE_READY) {  // TODO: Double check average waiting time
+			} else if (task_list[i]->state == STATE_READY) {
 				task_list[i]->params.waitingTime += 1;
 			}
 		}

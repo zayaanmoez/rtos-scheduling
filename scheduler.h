@@ -11,7 +11,10 @@
 
 #define MAX_TASKS 10
 #define NUM_TASKS 5
-#define TIME_QUANTUM 3
+
+#define TIME_QUANTUM_3 3
+#define TIME_QUANTUM_4 4
+#define TIME_QUANTUM_5 5
 
 // Scheduling algorithms
 #define ROUND_ROBIN 1
@@ -42,7 +45,7 @@ typedef struct task_control_block {
 	int priority;
 	sched_params params;
 	int attached;
-} tcb_t;s
+} tcb_t;
 
 // Interval node to track scheduling sequence in linked list
 typedef struct interval_node {
@@ -60,9 +63,15 @@ void suspend_task(int task_id);
 void ready_task(int task_id);
 void terminate_task(int task_id);
 
+int morr_quantum(int *burstTime_morr);
+int modified_quantum(int *burstTime_morr);
+
 void prioritySort(tcb_t **task_array, int numReady);
+void moduloSort(tcb_t **task_array, int numReady);
+void burstSort(tcb_t **task_array, int numReady);
 
 void insertQueue(tcb_t **ready_queue, tcb_t *task, int *numReady);
+void insertQueuePrio(tcb_t **ready_queue, tcb_t *task, int *numReady);
 tcb_t *popQueue(tcb_t **ready_queue, int *numReady);
 
 void insertInterval(Interval **schedule, int pid, int time);

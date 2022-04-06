@@ -1,0 +1,86 @@
+
+<---------------------------------->
+        Modified Round Robin Scheduler
+
+running process P3 - current time = 0
+running process P3 - current time = 1
+running process P3 - current time = 2
+running process P3 - current time = 3
+running process P3 - current time = 4
+running process P2 - current time = 5
+running process P2 - current time = 6
+running process P2 - current time = 7
+running process P2 - current time = 8
+running process P2 - current time = 9
+running process P4 - current time = 10
+running process P4 - current time = 11
+running process P4 - current time = 12
+running process P4 - current time = 13
+running process P4 - current time = 14
+running process P1 - current time = 15
+running process P1 - current time = 16
+running process P1 - current time = 17
+running process P1 - current time = 18
+running process P1 - current time = 19
+running process P5 - current time = 20
+running process P5 - current time = 21
+running process P5 - current time = 22
+running process P5 - current time = 23
+running process P3 - current time = 24
+running process P3 - current time = 25
+running process P3 - current time = 26
+running process P3 - current time = 27
+running process P4 - current time = 28
+running process P4 - current time = 29
+running process P4 - current time = 30
+running process P4 - current time = 31
+running process P4 - current time = 32
+running process P2 - current time = 33
+running process P2 - current time = 34
+running process P2 - current time = 35
+running process P2 - current time = 36
+running process P2 - current time = 37
+running process P1 - current time = 38
+running process P1 - current time = 39
+running process P1 - current time = 40
+running process P1 - current time = 41
+running process P1 - current time = 42
+running process P2 - current time = 43
+running process P2 - current time = 44
+running process P2 - current time = 45
+running process P2 - current time = 46
+running process P2 - current time = 47
+running process P1 - current time = 48
+running process P1 - current time = 49
+running process P1 - current time = 50
+running process P1 - current time = 51
+running process P1 - current time = 52
+running process P2 - current time = 53
+running process P2 - current time = 54
+running process P2 - current time = 55
+running process P1 - current time = 56
+running process P1 - current time = 57
+running process P1 - current time = 58
+running process P1 - current time = 59
+running process P1 - current time = 60
+running process P1 - current time = 61
+running process P1 - current time = 62
+No task running - current time = 63
+
+Process Prio    Arrival_time    Burst_Time      Waiting_Time    Response_Time   Turn_Around_Time
+     P1    4               0            22                41               15                 63
+     P2    2               0            18                38                5                 56
+     P3    1               0             9                19                0                 28
+     P4    3               0            10                23               10                 33
+     P5    5               0             4                20               20                 24
+Average waiting time = 28.2000
+Average response time = 10.0000
+Average turn around time = 40.8000
+Throughput = 0.0245
+# of Context Switches = 12
+
+Gantt Chart - Modified Round Robin Scheduler
+|  P3  |  P2  |  P4  |  P1  |  P5  |  P3  |  P4  |  P2  |  P1  |  P2  |  P1  |  P2  |  P1  |
+0      5      10     15     20     24     28     33     38     43     48     53     56     63
+
+<---------------------------------->

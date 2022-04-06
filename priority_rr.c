@@ -62,10 +62,9 @@ void priorityRoundRobinScheduler(tcb_t **task_list, int num_tasks, int quantum) 
 			} else if (task_list[i]->state == STATE_INACTIVE &&
 					task_list[i]->params.arrivalTime == currentTime) {
 				ready_task(i);
-				insertQueue(ready_queue, task_list[i], &numReady);
-				prioritySort(ready_queue, numReady);
+				insertQueuePrio(ready_queue, task_list[i], &numReady);
 				++numProcesses;
-			} else if (task_list[i]->state == STATE_READY) {  // TODO: Double check average waiting time
+			} else if (task_list[i]->state == STATE_READY) {
 				task_list[i]->params.waitingTime += 1;
 			}
 		}
