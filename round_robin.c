@@ -64,12 +64,12 @@ void rrScheduler(tcb_t **task_list, int num_tasks, int quantum_number) {
 				ready_task(i);
 				insertQueue(ready_queue, task_list[i], &numReady);
 				++numProcesses;
-			} else if (task_list[i]->state == STATE_READY) {  // TODO: Double check average waiting time
+			} else if (task_list[i]->state == STATE_READY) {
 				task_list[i]->params.waitingTime += 1;
 			}
 		}
 		schedule_task_rr(ready_queue, &running_task, &schedule, &numReady, currentTime, quantum_number);
-		delay(500);
+		//delay(500);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 

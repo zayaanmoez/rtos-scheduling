@@ -6,11 +6,11 @@
 
 
 tcb_t **task_list;
-int p = 0;
+int morr_p = 0;
 
 int main(int argc, char **argv) {
 
-	int sched;
+	int sched = -1;
 
 	// Allocate memory for task control blocks
 	task_list = malloc(MAX_TASKS * sizeof(tcb_t));
@@ -23,84 +23,112 @@ int main(int argc, char **argv) {
 		// Get input
 		if(getArgs(&sched) != 1) return EXIT_FAILURE;
 
+		// Process params for priority based
+		int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
+		int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
+		int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
+
+		// Process params for round robin based
+		int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
+		int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
+
+		// Process params for modified round robin
+		int burstTime_mrr[NUM_TASKS] = {22, 18, 9, 10, 4};
+		int arrivalTime_mrr[NUM_TASKS] = {0, 0, 0, 0, 0};
+		int priorities_mrr[NUM_TASKS] = {4, 2, 1, 3, 5};
+
+		// Process params for modulo based round robin
+		int burstTime_morr[NUM_TASKS] = {10, 20, 30, 40, 50};
+		int arrivalTime_morr[NUM_TASKS] = {0, 0, 0, 0, 0};
+		int priorities_morr[NUM_TASKS] = {2, 3, 5, 4, 1};
+
+		// Process params for priority based round robin
+		int burstTime_pbrr[NUM_TASKS] = {10, 3, 12, 25, 7};
+		int arrivalTime_pbrr[NUM_TASKS] = {0, 0, 0, 0, 0};
+		int priorities_pbrr[NUM_TASKS] = {2, 1, 3, 4, 5};
+
+		int burstTime_prr[NUM_TASKS] = {13, 25, 33, 8, 2};
+		int priorities_prr[NUM_TASKS] = {2, 4, 1, 3, 5};
+		//int burstTime_morr[4] = {43, 32, 24, 17};
+		//int arrivalTime_morr[4] = {0, 0, 0, 0};
+
 		switch(sched) {
 			case ROUND_ROBIN:
-			{
 				// Round Robin Scheduling
-				int arrivalTime_rr[NUM_TASKS] = {0, 5, 1, 6, 8};
-				int burstTime_rr[NUM_TASKS] = {8, 2, 7, 3, 5};
-
 				init_tasks(burstTime_rr, arrivalTime_rr, NULL, NUM_TASKS);
-				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM);
+				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_3);
 				break;
-			}
-			case PRIORITY:
-			{
-				// Priority Based Scheduling
-				int burstTime_p[NUM_TASKS] = {6, 1, 2, 3, 4};
-				int arrivalTime_p[NUM_TASKS] = {4, 5, 1, 5, 3};
-				int priorities_p[NUM_TASKS] = {2, 3, 4, 1, 5};
 
+			case PRIORITY:
+				// Priority Based Scheduling
 				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
 				priorityScheduler(task_list, NUM_TASKS);
 				break;
-			}
+
 			case MODIFIED_RR:
-			{
 				// Modified Round Robin Scheduling
-				int burstTime_mrr[NUM_TASKS] = {14, 45, 36, 25, 77};
-				int arrivalTime_mrr[NUM_TASKS] = {0, 1, 2, 3, 4};
-
-				int qn = 0;
-				if(NUM_TASKS%2 == 0){
-					for(int i = 0; i < NUM_TASKS; i++){
-						qn += burstTime_mrr[i];
-
-					}
-					qn /= NUM_TASKS;
-				}else{
-					qn = burstTime_mrr[NUM_TASKS/2];
-				}
-
-				init_tasks(burstTime_mrr, arrivalTime_mrr, NULL, NUM_TASKS);
-				mrrScheduler(task_list, NUM_TASKS, qn);
+				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);
+				mrrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
 				break;
-			}
+
 			case MODULO_BASED_RR:
-			{
 				//Modulo Based Round Robin Scheduling
-				//int burstTime_morr[NUM_TASKS] = {10, 20, 30, 40, 50};
-				//int arrivalTime_morr[NUM_TASKS] = {0, 0, 0, 0, 0};
-
-				int burstTime_morr[4] = {43, 32, 24, 17};
-				int arrivalTime_morr[4] = {0, 0, 0, 0};
-
-				int qn = 0;
-				for(int i = 0; i < 4; i++){
-					qn += burstTime_morr[i];
-				}
-				qn /= 4;
-
-				p = qn;
-
-				init_tasks(burstTime_morr, arrivalTime_morr, NULL, 4);
-				morrScheduler(task_list, 4, qn);
-
+				init_tasks(burstTime_morr, arrivalTime_morr, NULL, NUM_TASKS);
+				morrScheduler(task_list, NUM_TASKS, morr_quantum(burstTime_morr));
 				break;
-			}
+
 			case PRIORITY_BASED_RR:
-			{
-				// TODO: Priority Based Round Robin Scheduling
-
+				// Priority Based Round Robin Scheduling
+				init_tasks(burstTime_prr, NULL, priorities_prr, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5*2);
 				break;
-			}
-//			case MBRR_RR:
-//			case MRR_RR:
-//			case PBRR_RR:
-//			case PBRR_MRR:
-//			case PBRR_MBRR:
+
+			case PBRR_PRIO:
+				// Priority Based RR and Priority Based
+				printf("Priority Based Round Robin and Priority Based\n");
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityScheduler(task_list, NUM_TASKS);
+				detach_tasks();
+
+				init_tasks(burstTime_p, arrivalTime_p, priorities_p, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				break;
+
+			case PBRR_RR:
+				// Priority Based RR and Round Robin
+				printf("Priority Based Round Robin and Round Robin\n");
+				init_tasks(burstTime_pbrr, arrivalTime_pbrr, NULL, NUM_TASKS);
+				rrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				detach_tasks();
+
+				init_tasks(burstTime_pbrr, arrivalTime_pbrr, priorities_pbrr, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				break;
+
+			case PBRR_MRR:
+				// Priority Based RR and Modified Round Robin
+				printf("Priority Based Round Robin and Modified Round Robin\n");
+				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);
+				mrrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				detach_tasks();
+
+				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				break;
+
+			case PBRR_MBRR:
+				// Priority Based RR and Modulo Based RR
+				printf("Priority Based Round Robin and Modulo Based Round Robin\n");
+				init_tasks(burstTime_morr, arrivalTime_morr, NULL, NUM_TASKS);
+				morrScheduler(task_list, NUM_TASKS, morr_quantum(burstTime_morr));
+				detach_tasks();
+
+				init_tasks(burstTime_morr, arrivalTime_morr, priorities_morr, NUM_TASKS);
+				priorityRoundRobinScheduler(task_list, NUM_TASKS, TIME_QUANTUM_3);
+				break;
+
 			case EXIT:
-				printf("Exiting.");
+				printf("Exiting.\n");
 				break;
 			default:
 				printf("invalid argument.\n");
@@ -189,6 +217,36 @@ void terminate_task(int task_id) {
 
 
 /*
+ * Time quantum
+ */
+
+int morr_quantum(int *burstTime_morr) {
+	int qn = 0;
+	for(int i = 0; i < 4; i++){
+		qn += burstTime_morr[i];
+	}
+	qn /= 4;
+
+	morr_p = qn;
+	return qn;
+}
+
+int modified_quantum(int *burstTime_mrr) {
+	int qn = 0;
+	if(NUM_TASKS%2 == 0){
+		for(int i = 0; i < NUM_TASKS; i++){
+			qn += burstTime_mrr[i];
+
+		}
+		qn /= NUM_TASKS;
+	}else{
+		qn = burstTime_mrr[NUM_TASKS/2];
+	}
+	return qn;
+}
+
+
+/*
  * Sort task array by priority
  */
 
@@ -210,10 +268,10 @@ void prioritySort(tcb_t **task_array, int numReady) {
 */
 
 int moduloComp(const void *elem1, const void *elem2) {
-	int p1 = (*((tcb_t**)elem1))->params.burstTime%p;
-	int p2 = (*((tcb_t**)elem2))->params.burstTime%p;
-	if(p1 > p2) return 1;
-	if(p1 < p2) return -1;
+	int m1 = (*((tcb_t**)elem1))->params.burstTime%morr_p;
+	int m2 = (*((tcb_t**)elem2))->params.burstTime%morr_p;
+	if(m1 > m2) return 1;
+	if(m1 < m2) return -1;
 	return 0;
 }
 
@@ -222,6 +280,25 @@ void moduloSort(tcb_t **task_array, int numReady) {
 	qsort(task_array, numReady, sizeof(*task_array), moduloComp);
 }
 
+
+/*
+* Sort task array by remaining burst times
+*/
+
+int burstComp(const void *elem1, const void *elem2) {
+	int b1 = (*((tcb_t**)elem1))->params.burstTime - (*((tcb_t**)elem1))->params.runTime;
+	int b2 = (*((tcb_t**)elem2))->params.burstTime - (*((tcb_t**)elem2))->params.runTime;
+	if(b1 > b2) return 1;
+	if(b1 < b2) return -1;
+	return 0;
+}
+
+void burstSort(tcb_t **task_array, int numReady) {
+
+	qsort(task_array, numReady, sizeof(*task_array), burstComp);
+}
+
+
 /*
  * Insert to and remove first task from ready task queue
  */
@@ -229,6 +306,21 @@ void moduloSort(tcb_t **task_array, int numReady) {
 void insertQueue(tcb_t **ready_queue, tcb_t *task, int *numReady) {
 	int i = 0;
 	while(ready_queue[i] != NULL) i++;
+	ready_queue[i] = task;
+	++(*numReady);
+}
+
+void insertQueuePrio(tcb_t **ready_queue, tcb_t *task, int *numReady) {
+	int i = 0;
+	while(ready_queue[i] != NULL) {
+		if(task->priority < ready_queue[i]->priority) {
+			for(int j = *numReady; j > i; j--) {
+				ready_queue[j] = ready_queue[j-1];
+			}
+			break;
+		}
+		i++;
+	}
 	ready_queue[i] = task;
 	++(*numReady);
 }
@@ -327,12 +419,17 @@ void printSchedulingInfo() {
 int getArgs(int *sched) {
 	printf("\nScheduling Arguments: \n"
 			"%d. Round Robin\n"
-			"%d. Priority\n"
+			"%d. Priority Based\n"
 			"%d. Modified Round Robin\n"
 			"%d. Modulo Based Round Robin\n"
 			"%d. Priority Based Round Robin\n"
-			"%d. Exit\n\nEnter sched param (1-6): \n",
-			ROUND_ROBIN, PRIORITY, MODIFIED_RR, MODULO_BASED_RR, PRIORITY_BASED_RR,EXIT);
+			"%d. Priority Based RR and Priority Based\n"
+			"%d. Priority Based RR and Round Robin\n"
+			"%d. Priority Based RR and Modified RR\n"
+			"%d. Priority Based RR and Modulo Based RR\n"
+			"%d. Exit\n\nEnter sched param (0-9): \n",
+			ROUND_ROBIN, PRIORITY, MODIFIED_RR, MODULO_BASED_RR, PRIORITY_BASED_RR,
+			PBRR_PRIO, PBRR_RR, PBRR_MRR, PBRR_MBRR, EXIT);
 	if (scanf("%d", sched) != 1)
 	{
 	  printf("invalid argument.\n");

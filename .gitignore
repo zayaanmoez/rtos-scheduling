@@ -2,9 +2,11 @@
 *.o
 
 # Build Directory
-build/
+build/*
+tmp/
 
 # Executables
+scheduler
 *.exe
 *.out
 *.app

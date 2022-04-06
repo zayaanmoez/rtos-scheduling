@@ -7,7 +7,7 @@
 
 
 void schedule_task_mrr(tcb_t **ready_queue, tcb_t **running_task, Interval **schedule,
-		int *numReady, int currentTime, int quantum_number) {
+		int *numReady, int *round_count, int currentTime, int quantum_number) {
 
 	if(*running_task != NULL) {
 		(*running_task)->params.runTime += 1;
@@ -15,10 +15,12 @@ void schedule_task_mrr(tcb_t **ready_queue, tcb_t **running_task, Interval **sch
 			terminate_task((*running_task)->pid);
 			insertInterval(schedule, (*running_task)->pid, currentTime);
 			*running_task = NULL;
+			(*round_count)++;
 		} else if(*numReady > 0 && (*running_task)->params.runTime%quantum_number == 0) {
 			suspend_task((*running_task)->pid);
 			insertInterval(schedule, (*running_task)->pid, currentTime);
 			*running_task = NULL;
+			(*round_count)++;
 		}
 	}
 
@@ -43,53 +45,72 @@ void schedule_task_mrr(tcb_t **ready_queue, tcb_t **running_task, Interval **sch
 void mrrScheduler(tcb_t **task_list, int num_tasks, int quantum_number) {
 	int totalWaitingtime = 0, totalBursttime = 0,
 		totalResponsetime = 0, currentTime = 0,
-		numProcesses = 0, numReady = 0;
+		contextSwitches = 0, numProcesses = 0, numReady = 0;
+
+	int round_count = 0;
+	int process_left = num_tasks;
 
 	tcb_t **ready_queue = calloc(MAX_TASKS, sizeof(tcb_t *));
-		tcb_t *running_task = NULL;
-		Interval *schedule = NULL;
+	tcb_t *running_task = NULL;
+	Interval *schedule = NULL;
 
-		printf("\n<---------------------------------->\n");
-		printf("\t%s\n\n", SCHED_NAME);
+	printf("\n<---------------------------------->\n");
+	printf("\t%s\n\n", SCHED_NAME);
 
-		do {
-			for(int i = 0; i < num_tasks; i++) {
-				if(task_list[i]->state == STATE_WAITING) {
-					ready_task(i);
-					insertQueue(ready_queue, task_list[i], &numReady);
-					task_list[i]->params.waitingTime += 1;
-				} else if (task_list[i]->state == STATE_INACTIVE &&
-						task_list[i]->params.arrivalTime == currentTime) {
-					ready_task(i);
-					insertQueue(ready_queue, task_list[i], &numReady);
-					++numProcesses;
-				} else if (task_list[i]->state == STATE_READY) {  // TODO: Double check average waiting time
-					task_list[i]->params.waitingTime += 1;
-				}
+	do {
+		for(int i = 0; i < num_tasks; i++) {
+			if(task_list[i]->state == STATE_WAITING) {
+				ready_task(i);
+				insertQueue(ready_queue, task_list[i], &numReady);
+				task_list[i]->params.waitingTime += 1;
+			} else if (task_list[i]->state == STATE_INACTIVE &&
+					task_list[i]->params.arrivalTime == currentTime) {
+				ready_task(i);
+				insertQueue(ready_queue, task_list[i], &numReady);
+				prioritySort(ready_queue, numReady);
+				++numProcesses;
+			} else if (task_list[i]->state == STATE_READY) {
+				task_list[i]->params.waitingTime += 1;
 			}
-			schedule_task_mrr(ready_queue, &running_task, &schedule, &numReady, currentTime, quantum_number);
-			++currentTime;
-		} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
-
-		for (int i = 0; i < num_tasks; i++) {
-			totalResponsetime += task_list[i]->params.responseTime;
-			totalWaitingtime += task_list[i]->params.waitingTime;
-			totalBursttime += task_list[i]->params.burstTime;
 		}
+		if (round_count == process_left) {
+			round_count = 0;
+			process_left = numReady;
+			burstSort(ready_queue, numReady);
+		}
+		schedule_task_mrr(ready_queue, &running_task, &schedule, &numReady, &round_count,
+				currentTime, quantum_number);
+		//delay(500);
+		++currentTime;
+	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 
-		printSchedulingInfo();
+	for (int i = 0; i < num_tasks; i++) {
+		totalResponsetime += task_list[i]->params.responseTime;
+		totalWaitingtime += task_list[i]->params.waitingTime;
+		totalBursttime += task_list[i]->params.burstTime;
+	}
 
-		printf("Average waiting time = %.4f\n",
-		           ((float)totalWaitingtime / (float)num_tasks));
-		printf("Average response time = %.4f\n",
-			   ((float)totalResponsetime / (float)num_tasks));
-		printf("Average turn around time = %.4f\n",
-			   ((float)(totalWaitingtime + totalBursttime) / (float)num_tasks));
-		printf("Throughput = %.4f\n",
-				   ((float)num_tasks) / (float)(totalWaitingtime + totalBursttime));
-		printGanttChart(SCHED_NAME, schedule);
-		printf("\n<---------------------------------->\n");
+	Interval *s = schedule;
+	while(s != NULL) {
+		++contextSwitches;
+		s = s->nextInterval;
+	}
 
-		freeSchedule(&schedule);
-		free(ready_queue);
+
+	printSchedulingInfo();
+
+	printf("Average waiting time = %.4f\n",
+			   ((float)totalWaitingtime / (float)num_tasks));
+	printf("Average response time = %.4f\n",
+		   ((float)totalResponsetime / (float)num_tasks));
+	printf("Average turn around time = %.4f\n",
+		   ((float)(totalWaitingtime + totalBursttime) / (float)num_tasks));
+	printf("Throughput = %.4f\n",
+			   ((float)num_tasks) / (float)(totalWaitingtime + totalBursttime));
+	printf("# of Context Switches = %d\n", contextSwitches > 0 ? contextSwitches - 2 : 0);
+	printGanttChart(SCHED_NAME, schedule);
+	printf("\n<---------------------------------->\n");
+
+	freeSchedule(&schedule);
+	free(ready_queue);
 }
