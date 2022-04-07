@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 			case MODIFIED_RR:
 				// Modified Round Robin Scheduling
 				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);
-				mrrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				mrrScheduler(task_list, NUM_TASKS, modified_quantum(burstTime_mrr));
 				break;
 
 			case MODULO_BASED_RR:
@@ -109,7 +109,7 @@ int main(int argc, char **argv) {
 				// Priority Based RR and Modified Round Robin
 				printf("Priority Based Round Robin and Modified Round Robin\n");
 				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);
-				mrrScheduler(task_list, NUM_TASKS, TIME_QUANTUM_5);
+				mrrScheduler(task_list, NUM_TASKS, modified_quantum(burstTime_mrr));
 				detach_tasks();
 
 				init_tasks(burstTime_mrr, arrivalTime_mrr, priorities_mrr, NUM_TASKS);

@@ -69,7 +69,7 @@ void priorityRoundRobinScheduler(tcb_t **task_list, int num_tasks, int quantum) 
 			}
 		}
 		schedule_task_pbrr(ready_queue, &running_task, &schedule, &numReady, currentTime, quantum);
-		//delay(500);
+		delay(500);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 
