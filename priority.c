@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "scheduler.h"
 #include "policy.h"
 
@@ -70,7 +69,7 @@ void priorityScheduler(tcb_t **task_list, int num_tasks) {
 			}
 		}
 		schedule_task_prio(ready_queue, &running_task, &schedule, &numReady, currentTime);
-		delay(500);
+		usleep(100000);
 		++currentTime;
 	} while(numProcesses != num_tasks || numReady != 0 || running_task != NULL);
 

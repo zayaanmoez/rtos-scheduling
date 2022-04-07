@@ -1,6 +1,8 @@
 #ifndef POLICY_H
 #define POLICY_H
 
+#include <unistd.h>
+
 void priorityScheduler(tcb_t **task_list, int num_tasks);
 void rrScheduler(tcb_t **task_list, int num_tasks, int quantum_number);
 void mrrScheduler(tcb_t **task_list, int num_tasks, int quantum_number);
