@@ -3,11 +3,11 @@
 #
 
 DEBUG = -g
-CC = qcc
-LD = qcc
+CC = gcc
+LD = gcc
 
 
-TARGET = -Vgcc_ntox86_64
+#TARGET = -Vgcc_ntox86_64
 #TARGET = -Vgcc_ntox86
 #TARGET = -Vgcc_ntoarmv7le
 #TARGET = -Vgcc_ntoaarch64le
